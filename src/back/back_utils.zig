@@ -3,7 +3,7 @@ const GameStatus = struct {
     active_scene: Scenes,
 };
 
-const Scenes = enum { main_menu };
+pub const Scenes = enum { main_menu };
 
 pub fn getGameStatus() GameStatus {
     return GameStatus{

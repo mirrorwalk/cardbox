@@ -1,8 +1,25 @@
+const std = @import("std");
 const sdl = @import("../utils/sdl.zig");
+const render_scenes_utils = @import("render_scenes/render_scenes_utils.zig");
+
+const Scenes = @import("../back/back_utils.zig").Scenes;
 
 const FrontConfig = struct {
     window: WindowConfig,
     render: RenderConfig,
+    render_scene: render_scenes_utils.RenderScene,
+
+    pub fn deinit(self: *FrontConfig, allocator: std.mem.Allocator) void {
+        defer sdl.sdlQuit();
+
+        defer sdl.ttfQuit();
+
+        defer sdl.destroyWindow(self.window.window);
+
+        defer sdl.destroyRenderer(self.render.renderer);
+
+        defer self.render_scene.deinit(allocator);
+    }
 };
 
 const WindowConfig = struct {
@@ -58,20 +75,13 @@ pub fn init() !FrontConfig {
         .renderer = renderer,
     };
 
+    const scene = render_scenes_utils.getScene(Scenes.main_menu);
+
     const front_config = FrontConfig{
         .window = window_config,
         .render = render_config,
+        .render_scene = scene,
     };
 
     return front_config;
-}
-
-pub fn deinit(front_config: *FrontConfig) void {
-    defer sdl.sdlQuit();
-
-    defer sdl.ttfQuit();
-
-    defer sdl.destroyWindow(front_config.window.window);
-
-    defer sdl.destroyRenderer(front_config.render.renderer);
 }

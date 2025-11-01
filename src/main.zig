@@ -4,14 +4,17 @@ const front = @import("front/front.zig");
 const front_utils = @import("front/front_utils.zig");
 
 pub fn main() !void {
-    std.debug.print("Batman\n", .{});
+    var gpa = std.heap.GeneralPurposeAllocator(.{ .safety = true }){};
+    defer _ = gpa.deinit();
+    const allocator = gpa.allocator();
 
     var game_status = back_utils.getGameStatus();
 
     var front_config = try front_utils.init();
-    defer front_utils.deinit(&front_config);
+    defer front_config.deinit(allocator);
 
     while (game_status.running) {
-        game_status.running = front.render(&front_config.render);
+        game_status.running = front.handleEvents();
+        front.render(&front_config.render, &front_config.render_scene);
     }
 }
