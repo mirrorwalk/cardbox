@@ -10,7 +10,7 @@ pub fn main() !void {
 
     var game_status = back_utils.getGameStatus();
 
-    var front_config = try front_utils.init();
+    var front_config = try front_utils.init(allocator);
     defer front_config.deinit(allocator);
 
     while (game_status.running) {

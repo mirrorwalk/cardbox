@@ -1,6 +1,7 @@
 const std = @import("std");
 const sdl = @import("../utils/sdl.zig");
 const render_scenes_utils = @import("render_scenes/render_scenes_utils.zig");
+const font_utils = @import("font_utils.zig");
 
 const Scenes = @import("../back/back_utils.zig").Scenes;
 
@@ -37,7 +38,7 @@ pub const RenderConfig = struct {
     background_color: sdl.Color,
 };
 
-pub fn init() !FrontConfig {
+pub fn init(allocator: std.mem.Allocator) !FrontConfig {
     try sdl.sdlInit();
 
     try sdl.ttfInit();
@@ -75,12 +76,14 @@ pub fn init() !FrontConfig {
         .renderer = renderer,
     };
 
-    const scene = render_scenes_utils.getScene(Scenes.main_menu);
+    var render_scene = render_scenes_utils.getRenderScene();
+
+    try render_scenes_utils.changeScene(&render_scene, Scenes.main_menu, allocator);
 
     const front_config = FrontConfig{
         .window = window_config,
         .render = render_config,
-        .render_scene = scene,
+        .render_scene = render_scene,
     };
 
     return front_config;
